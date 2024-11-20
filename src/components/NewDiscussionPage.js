@@ -24,7 +24,7 @@ const NewDiscussionPage = () => {
                         Forum Diskusi
                     </Link>
                     <Link
-                        to="/video"
+                        to="/videos"
                         className="px-4 py-2 rounded-full font-semibold hover:bg-[#2F4C78] hover:text-white"
                     >
                         Video Belajar

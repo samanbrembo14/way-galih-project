@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import LandingPage from './components/LandingPage';
 import HomePage from './components/HomePage';
 import ForumPage from './components/ForumPage';
+import VideosPage from './components/VideosPage';
 import NewDiscussionPage from './components/NewDiscussionPage';
 import ReplyDiscussionPage from './components/ReplyDiscussionPage';
 import ProfilePage from './components/ProfilePage';
@@ -30,6 +31,9 @@ function App() {
 
                 {/* Rute untuk Forum Page */}
                 <Route path="/forum" element={<ForumPage />} />
+
+                {/* Rute untuk Videos Page */}
+                <Route path="/videos" element={<VideosPage />} />
 
                 {/* Rute untuk halaman Buat Diskusi Baru */}
                 <Route path="/new-discussion" element={<NewDiscussionPage />} />

@@ -65,9 +65,9 @@ const HomePage = () => {
                         Forum Diskusi
                     </Link>
                     <Link
-                        to="/video"
+                        to="/videos"
                         className={`px-4 py-2 rounded-full font-semibold ${
-                            location.pathname === '/video' ? 'bg-[#2F4C78] text-white' : 'hover:text-gray-300'
+                            location.pathname === '/videos' ? 'bg-[#2F4C78] text-white' : 'hover:text-gray-300'
                         }`}
                     >
                         Video Belajar

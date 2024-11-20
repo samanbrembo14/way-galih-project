@@ -37,7 +37,7 @@ const AdminPage = () => {
                     <button
                         onClick={() => handleContentChange('video')}
                         className={`px-4 py-2 rounded-full font-semibold ${
-                            mainContent === 'video' ? 'bg-[#2F4C78] text-white' : 'hover:text-gray-300'
+                            mainContent === 'videos' ? 'bg-[#2F4C78] text-white' : 'hover:text-gray-300'
                         }`}
                     >
                         Video Belajar

@@ -13,7 +13,7 @@ const LoginPage = () => {
         if (email === 'admin@example.com' && password === 'adminpass') {
             // Arahkan ke halaman Admin jika login sebagai admin
             navigate('/admin');
-        } else if (email === 'user@example.com' && password === 'password123') {
+        } else if (email === 'user@example.com' && password === 'userpass') {
             // Arahkan ke halaman Home jika login sebagai user biasa
             navigate('/home');
         } else {
