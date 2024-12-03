@@ -1,129 +1,118 @@
-import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { DiscussionEmbed } from 'disqus-react';
 
 const ReplyDiscussionPage = () => {
-    const navigate = useNavigate();
+    const { id } = useParams(); // ID diskusi dari URL
+    const navigate = useNavigate(); // Untuk navigasi tombol kembali
+    const [discussion, setDiscussion] = useState(null);
+    const [loading, setLoading] = useState(true); // Status loading
+    const [error, setError] = useState(''); // Pesan error
 
-    // Data contoh untuk topik diskusi
-    const discussion = {
-        author: 'Andi Prasetyo Wibowo',
-        time: '3 Jam',
-        title: 'Keterampilan Memasak Sederhana',
-        description: 'Resep masakan apa yang bisa kamu coba untuk belajar memasak di rumah, dan apa saja bahan-bahan yang dibutuhkan?',
-        commentsCount: 2,
+    // Fetch detail diskusi
+    useEffect(() => {
+        const fetchDiscussion = async () => {
+            try {
+                const response = await axios.get(`http://localhost:5000/api/forum/${id}`);
+                if (response.data) {
+                    setDiscussion(response.data);
+                    setError('');
+                } else {
+                    setError('Diskusi tidak ditemukan. Silakan coba lagi.');
+                }
+            } catch (err) {
+                console.error('Error fetching discussion:', err);
+                setError(err.response?.data?.error || 'Gagal memuat diskusi. Silakan coba lagi.');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchDiscussion();
+    }, [id]);
+
+    // Jika sedang memuat
+    if (loading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-[#e6f0fa] to-[#ffffff]">
+                <p className="text-gray-500">Memuat diskusi...</p>
+            </div>
+        );
+    }
+
+    // Jika terjadi error
+    if (error) {
+        return (
+            <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-[#e6f0fa] to-[#ffffff]">
+                <p className="text-red-500 text-lg">{error}</p>
+                <button
+                    onClick={() => navigate(-1)}
+                    className="bg-blue-500 text-white px-4 py-2 rounded mt-4 shadow hover:bg-blue-600"
+                >
+                    Kembali
+                </button>
+            </div>
+        );
+    }
+
+    // Konfigurasi Disqus
+    const disqusShortname = "waygalih"; // Ganti dengan Shortname Disqus Anda
+    const disqusConfig = {
+        url: `http://localhost:3000/reply-discussion/${id}`, // URL halaman ini
+        identifier: id.toString(), // ID unik diskusi
+        title: discussion.title, // Judul diskusi
     };
 
-    // Data contoh untuk komentar terbaru
-    const comments = [
-        {
-            id: 1,
-            author: 'Rina Melati Sari',
-            time: '32 menit yang lalu',
-            content: 'Menurut saya, resep yang paling gampang untuk pemula itu Nasi Goreng. Bahan-bahannya simpel, seperti nasi, telur, dan bumbu-bumbu. Selain cepat dibuat, kita juga bisa tambahin sayuran atau protein sesuai selera. Enak dan praktis!',
-        },
-        {
-            id: 2,
-            author: 'Budi Santoso Prabowo',
-            time: '42 menit yang lalu',
-            content: 'Menurut saya, Salad Sayuran itu lebih mudah dan sehat. Cukup campur sayuran segar kayak selada, tomat, dan timun, nggak perlu masak-masak. Jadi, buat yang baru belajar masak, salad bisa jadi pilihan yang cepat dan tetap enak.',
-        },
-    ];
-
     return (
-        <div className="min-h-screen bg-[#e6f0fa]">
+        <div className="min-h-screen bg-gradient-to-b from-[#e6f0fa] to-[#ffffff]">
             {/* Header */}
-            <header className="flex justify-between items-center bg-[#5a90b6] px-8 py-4 text-white">
-                <div className="flex items-center space-x-4">
-                    <img src="/images/logo.png" alt="Logo" className="w-10 h-10" />
-                    <h1 className="text-2xl font-bold">Way Galih Maju</h1>
-                </div>
-                <nav className="space-x-8">
-                    <Link
-                        to="/home"
-                        className="px-4 py-2 rounded-full font-semibold hover:bg-[#2F4C78] hover:text-white"
-                    >
-                        Home
-                    </Link>
-                    <Link
-                        to="/forum"
-                        className="px-4 py-2 rounded-full font-semibold bg-[#2F4C78] text-white"
-                    >
-                        Forum Diskusi
-                    </Link>
-                    <Link
-                        to="/video"
-                        className="px-4 py-2 rounded-full font-semibold hover:bg-[#2F4C78] hover:text-white"
-                    >
-                        Video Belajar
-                    </Link>
-                </nav>
-                <div className="flex items-center">
-                    <Link
-                        to="/profile"
-                        className="bg-white p-2 rounded-full flex items-center justify-center hover:bg-gray-200"
-                    >
-                        <img src="/images/user.png" alt="Account Icon" className="w-5 h-5 rounded-full" />
-                    </Link>
+            <header className="bg-gradient-to-r from-[#2F4C78] to-[#5a90b6] text-white p-6 shadow-lg rounded-b-lg">
+                <div className="max-w-4xl mx-auto">
+                    <h1 className="text-3xl font-extrabold tracking-wide mb-2">{discussion.title}</h1>
+                    <p className="text-sm">
+                        <span className="font-semibold">Oleh: </span>{discussion.author || 'Anonim'}
+                    </p>
+                    <p className="text-xs text-gray-300 mt-1">
+                        {discussion.time ? new Date(discussion.time).toLocaleString() : 'Waktu tidak tersedia'}
+                    </p>
                 </div>
             </header>
 
             {/* Tombol Kembali */}
-            <div className="flex items-center mt-6 mb-4">
-                <button onClick={() => navigate(-1)} className="text-2xl text-gray-700 mr-2">
-                    &#8592;
+            <div className="max-w-4xl mx-auto mt-4">
+                <button
+                    onClick={() => navigate(-1)}
+                    className="bg-gray-300 hover:bg-gray-400 text-gray-700 font-semibold py-2 px-4 rounded-lg shadow"
+                >
+                    &larr; Kembali
                 </button>
-                <span className="text-lg font-semibold">Forum Diskusi</span>
             </div>
 
-            {/* Detail Diskusi */}
-            <div className="bg-white p-6 rounded-lg shadow-md mb-8">
-                <div className="flex items-center space-x-4 mb-4">
-                    <img src="/images/user.png" alt="User" className="w-8 h-8 rounded-full" />
-                    <div>
-                        <p className="font-semibold text-gray-800">{discussion.author}</p>
-                        <p className="text-gray-500 text-sm">{discussion.time}</p>
+            {/* Konten */}
+            <main className="max-w-4xl mx-auto p-6 bg-white mt-6 rounded-lg shadow-md border border-gray-200">
+                {/* Isi Forum */}
+                <section className="mb-8">
+                    <h2 className="text-2xl font-bold text-gray-800 mb-4">Isi Forum</h2>
+                    <p className="text-lg text-gray-700 leading-relaxed bg-gray-100 p-4 rounded-lg shadow-sm">
+                        {discussion.description}
+                    </p>
+                </section>
+
+                {/* Pemisah */}
+                <div className="my-6 flex items-center">
+                    <hr className="flex-grow border-gray-300" />
+                    <span className="px-4 text-gray-500 font-semibold">Komentar</span>
+                    <hr className="flex-grow border-gray-300" />
+                </div>
+
+                {/* Komentar Disqus */}
+                <section className="mt-8">
+                    <div className="bg-gray-50 p-6 rounded-lg shadow-lg">
+                        <DiscussionEmbed shortname={disqusShortname} config={disqusConfig} />
                     </div>
-                </div>
-                <h2 className="text-xl font-bold text-gray-900 mb-2">{discussion.title}</h2>
-                <p className="text-gray-700 mb-4">{discussion.description}</p>
-                <div className="flex items-center text-gray-500 text-sm">
-                    <span className="mr-2">&#128172;</span>
-                    <span>{discussion.commentsCount} Pembahasan</span>
-                </div>
-            </div>
-
-            {/* Form Komentar */}
-            <div className="flex items-center mb-8">
-                <img src="/images/user.png" alt="User" className="w-8 h-8 rounded-full mr-4" />
-                <input
-                    type="text"
-                    placeholder="Tulis komentar anda disini..."
-                    className="flex-1 border border-gray-300 px-4 py-2 rounded-lg focus:outline-none"
-                />
-                <button className="ml-4 bg-[#5291B0] text-white font-semibold px-6 py-2 rounded-lg">
-                    Balas
-                </button>
-            </div>
-
-            {/* Komentar Terbaru */}
-            <section>
-                <h3 className="text-xl font-semibold mb-4">Komentar Terbaru</h3>
-                <div className="space-y-4">
-                    {comments.map((comment) => (
-                        <div key={comment.id} className="bg-white p-4 rounded-lg shadow-md border border-gray-200">
-                            <div className="flex items-center space-x-4 mb-2">
-                                <img src="/images/user.png" alt="User" className="w-8 h-8 rounded-full" />
-                                <div>
-                                    <p className="font-semibold text-gray-800">{comment.author}</p>
-                                    <p className="text-gray-500 text-sm">{comment.time}</p>
-                                </div>
-                            </div>
-                            <p className="text-gray-700 mb-2">{comment.content}</p>
-                            <button className="text-sm font-semibold text-gray-500 hover:text-gray-700">Balas</button>
-                        </div>
-                    ))}
-                </div>
-            </section>
+                </section>
+            </main>
         </div>
     );
 };

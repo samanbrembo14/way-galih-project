@@ -23,3 +23,12 @@ yarn-debug.log*
 yarn-error.log*
 ..
 package-lock.json
+# Dependency directories
+node_modules/
+
+# Environment variables
+.env
+
+# Logs
+logs
+*.log

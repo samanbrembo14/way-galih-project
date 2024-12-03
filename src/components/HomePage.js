@@ -1,31 +1,23 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const HomePage = () => {
     const [currentSlide, setCurrentSlide] = useState(0);
+    const [carouselData, setCarouselData] = useState([]);
     const location = useLocation();
     const navigate = useNavigate();
 
-    const carouselData = [
-        {
-            id: 1,  // Tambahkan ID untuk setiap item agar mudah diidentifikasi
-            title: 'Jadwal Poskamling',
-            description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. In bibendum augue ut mauris facilisis malesuada.',
-            image: '/images/poskamling.jpg'
-        },
-        {
-            id: 2,
-            title: 'Kegiatan Gotong Royong',
-            description: 'Kegiatan gotong royong yang dilaksanakan di desa untuk menjaga kebersihan dan kerukunan warga.',
-            image: '/images/gotong.jpg'
-        },
-        {
-            id: 3,
-            title: 'Musyawarah Desa',
-            description: 'Diskusi dan musyawarah warga desa untuk membahas kepentingan bersama dan pengembangan desa.',
-            image: '/images/musdes.jpg'
-        },
-    ];
+    useEffect(() => {
+        axios.get('http://localhost:5000/api/announcements')
+            .then((response) => {
+                const sortedData = response.data.sort(
+                    (a, b) => new Date(b.date) - new Date(a.date)
+                );
+                setCarouselData(sortedData);
+            })
+            .catch((error) => console.error('Error fetching announcements:', error));
+    }, []);
 
     const handleNextSlide = () => {
         setCurrentSlide((prevSlide) => (prevSlide + 1) % carouselData.length);
@@ -36,7 +28,7 @@ const HomePage = () => {
     };
 
     const handleInfoClick = (id) => {
-        navigate(`/info-detail/${id}`);  // Mengarahkan ke halaman detail sesuai ID item
+        navigate(`/info-detail/${id}`);
     };
 
     return (
@@ -90,13 +82,24 @@ const HomePage = () => {
                     >
                         &#10094;
                     </button>
-                    <div className="bg-white p-6 rounded-lg shadow-md max-w-3xl w-full h-[400px] flex flex-col justify-between text-center">
-                        <h2 className="text-2xl font-bold mb-4">{carouselData[currentSlide].title}</h2>
-                        <p className="text-gray-700 mb-4">
-                            {carouselData[currentSlide].description}
-                        </p>
-                        <img src={carouselData[currentSlide].image} alt={carouselData[currentSlide].title} className="rounded-lg w-full h-52 object-cover" />
-                    </div>
+                    {carouselData.length > 0 && (
+                        <div
+                            onClick={() => handleInfoClick(carouselData[currentSlide]?.id)}
+                            className="bg-white p-6 rounded-lg shadow-md max-w-3xl w-full h-[400px] flex flex-col justify-between text-center overflow-hidden cursor-pointer"
+                        >
+                            <h2 className="text-2xl font-bold mb-4">{carouselData[currentSlide]?.title}</h2>
+                            <p className="text-gray-700 mb-4">
+                                {carouselData[currentSlide]?.description.length > 100
+                                    ? `${carouselData[currentSlide]?.description.slice(0, 100)}...`
+                                    : carouselData[currentSlide]?.description}
+                            </p>
+                            <img
+                                src={`http://localhost:5000${carouselData[currentSlide]?.image}`}
+                                alt={carouselData[currentSlide]?.title}
+                                className="rounded-lg w-full h-52 object-cover"
+                            />
+                        </div>
+                    )}
                     <button
                         onClick={handleNextSlide}
                         className="text-3xl text-white bg-[#4B7C95] p-3 rounded-full focus:outline-none"
@@ -112,12 +115,13 @@ const HomePage = () => {
                         {carouselData.map((item) => (
                             <div
                                 key={item.id}
-                                onClick={() => handleInfoClick(item.id)} // Navigasi ke halaman detail sesuai ID
+                                onClick={() => handleInfoClick(item.id)}
                                 className="relative bg-white rounded-lg shadow-md overflow-hidden cursor-pointer"
                             >
-                                <img src={item.image} alt={item.title} className="w-full h-40 object-cover" />
+                                <img src={`http://localhost:5000${item.image}`} alt={item.title} className="w-full h-40 object-cover" />
                                 <div className="absolute bottom-0 bg-[#5291B0] text-white text-center w-full py-2">
                                     <h4 className="text-lg font-semibold">{item.title}</h4>
+                                    <p className="text-sm">{item.date}</p>
                                 </div>
                             </div>
                         ))}

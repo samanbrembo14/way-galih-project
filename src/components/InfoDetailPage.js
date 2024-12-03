@@ -1,60 +1,92 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const InfoDetailPage = () => {
-    const { id } = useParams(); // Mengambil parameter ID dari URL
+    const { id } = useParams(); // Ambil ID dari URL
     const navigate = useNavigate();
+    const [infoDetail, setInfoDetail] = useState(null); // State untuk detail informasi
+    const [errorMessage, setErrorMessage] = useState(''); // Pesan error
+    const [loading, setLoading] = useState(true); // Status loading
 
-    // Data informasi (bisa juga diimpor dari file terpisah jika data besar)
-    const infoData = [
-        {
-            id: 2,
-            title: 'Informasi Kegiatan Gotong Royong',
-            description: 'Deskripsi lengkap untuk kegiatan gotong royong...',
-            image: '/images/gotong.jpg',
-        },
-        {
-            id: 1,
-            title: 'Jadwal Poskamling',
-            description: 'Deskripsi lengkap untuk jadwal poskamling...',
-            image: '/images/poskamling.jpg',
-        },
-        {
-            id: 3,
-            title: 'Musyawarah Desa',
-            description: 'Deskripsi lengkap untuk musyawarah desa...',
-            image: '/images/musdes.jpg',
-        },
-    ];
+    // Fetch detail informasi dari backend
+    useEffect(() => {
+        const fetchInfoDetail = async () => {
+            try {
+                const response = await axios.get(`http://localhost:5000/api/announcements/${id}`);
+                setInfoDetail(response.data);
+                setErrorMessage('');
+            } catch (error) {
+                console.error('Error fetching info detail:', error);
+                setErrorMessage(
+                    error.response?.data?.error || 'Gagal memuat detail informasi.'
+                );
+            } finally {
+                setLoading(false);
+            }
+        };
 
-    // Cari informasi berdasarkan ID dari URL
-    const info = infoData.find((item) => item.id === parseInt(id));
+        if (id) {
+            fetchInfoDetail();
+        } else {
+            setErrorMessage('ID tidak valid.');
+            setLoading(false);
+        }
+    }, [id]);
 
-    if (!info) {
-        return <p>Informasi tidak ditemukan.</p>;
+    // Jika sedang memuat
+    if (loading) {
+        return (
+            <div className="min-h-screen bg-[#e6f0fa] flex items-center justify-center">
+                <p className="text-gray-500">Memuat detail informasi...</p>
+            </div>
+        );
     }
 
+    // Jika terjadi error
+    if (errorMessage) {
+        return (
+            <div className="min-h-screen bg-[#e6f0fa] flex flex-col items-center justify-center">
+                <p className="text-red-500">{errorMessage}</p>
+                <button
+                    onClick={() => navigate(-1)}
+                    className="bg-blue-500 text-white px-4 py-2 rounded mt-4"
+                >
+                    Kembali
+                </button>
+            </div>
+        );
+    }
+
+    // Jika data berhasil dimuat
     return (
-        <div className="min-h-screen bg-gradient-to-br from-[#e6f0fa] to-[#ffffff] p-8">
-            {/* Tombol Kembali */}
-            <button onClick={() => navigate(-1)} className="text-3xl text-gray-800 mb-8">
-                &#8592;
-            </button>
+        <div className="min-h-screen bg-[#e6f0fa]">
+            <header className="bg-[#5a90b6] px-8 py-4 text-white">
+                <h1 className="text-2xl font-bold">Detail Informasi</h1>
+            </header>
 
-            {/* Konten Informasi */}
-            <div className="text-center mb-8">
-                <h1 className="text-3xl font-bold text-gray-800">Informasi Terbaru</h1>
-            </div>
-
-            <div className="max-w-4xl mx-auto bg-white p-6 rounded-lg shadow-md">
-                <h2 className="text-2xl font-bold mb-4 text-[#2F4C78]">{info.title}</h2>
-                <div className="flex flex-col md:flex-row">
-                    <img src={info.image} alt={info.title} className="rounded-lg w-full md:w-1/3 h-auto mb-4 md:mr-6 object-cover" />
-                    <p className="text-gray-700 text-lg">
-                        {info.description}
-                    </p>
-                </div>
-            </div>
+            <main className="max-w-4xl mx-auto p-8 bg-white rounded shadow-md mt-8">
+                <h2 className="text-3xl font-bold mb-4">{infoDetail.title}</h2>
+                <p className="text-gray-700 mb-6">{infoDetail.description}</p>
+                <p className="text-gray-500 text-sm mb-4">
+                    Dipublikasikan pada: {new Date(infoDetail.date).toLocaleDateString()}
+                </p>
+                {infoDetail.image && (
+                    <div className="flex justify-center mb-6">
+                        <img
+                            src={`http://localhost:5000${infoDetail.image}`}
+                            alt={infoDetail.title}
+                            className="max-w-lg h-auto rounded shadow-lg"
+                        />
+                    </div>
+                )}
+                <button
+                    onClick={() => navigate(-1)}
+                    className="bg-blue-500 text-white px-6 py-3 rounded"
+                >
+                    Kembali
+                </button>
+            </main>
         </div>
     );
 };

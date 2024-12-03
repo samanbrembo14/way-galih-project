@@ -1,45 +1,39 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
+import axios from 'axios';
 
 const ForumPage = () => {
     const location = useLocation();
     const navigate = useNavigate();
+    const [discussions, setDiscussions] = useState([]);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [filteredDiscussions, setFilteredDiscussions] = useState([]);
+    const [errorMessage, setErrorMessage] = useState('');
 
-    // Data contoh untuk diskusi terbaru
-    const discussions = [
-        {
-            id: 1,
-            author: 'Andi Prasetyo Wibowo',
-            time: '3 Jam',
-            title: 'Keterampilan Memasak Sederhana',
-            description: 'Resep masakan apa yang bisa kamu coba untuk belajar memasak di rumah, dan apa saja bahan-bahan yang dibutuhkan?',
-            comments: 9,
-        },
-        {
-            id: 2,
-            author: 'Siti Nurhaliza Rahmawati',
-            time: '5 Jam',
-            title: 'Membuat Kompos dari Sampah Organik',
-            description: 'Bagaimana cara membuat kompos dari sampah organik di rumah, dan apa saja manfaatnya untuk tanaman?',
-            comments: 10,
-        },
-        {
-            id: 3,
-            author: 'Budi Santoso Hartono',
-            time: '9 Jam',
-            title: 'Membuat Kerajinan Tangan dari Bahan Daur Ulang',
-            description: 'Apa saja kerajinan tangan yang bisa dibuat dari bahan daur ulang yang ada di rumah, dan bagaimana cara membuatnya?',
-            comments: 7,
-        },
-        {
-            id: 4,
-            author: 'Rina Amelia Putri',
-            time: '12 Jam',
-            title: 'Menanam Sayuran di Kebun Rumah',
-            description: 'Sayuran apa yang paling mudah ditanam di kebun rumah, dan bagaimana cara merawatnya agar dapat tumbuh dengan baik?',
-            comments: 5,
-        },
-    ];
+    // Fetch discussions from the backend
+    useEffect(() => {
+        const fetchDiscussions = async () => {
+            try {
+                const response = await axios.get('http://localhost:5000/api/forum'); // Hanya ambil yang approved
+                console.log('Approved Discussions fetched:', response.data);
+                setDiscussions(response.data);
+                setFilteredDiscussions(response.data); // Awalnya semua diskusi ditampilkan
+            } catch (error) {
+                console.error('Error fetching discussions:', error);
+                setErrorMessage('Gagal memuat diskusi.');
+            }
+        };
+
+        fetchDiscussions();
+    }, []);
+
+    // Filter discussions setiap kali searchQuery berubah
+    useEffect(() => {
+        const result = discussions.filter((discussion) =>
+            discussion.title.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+        setFilteredDiscussions(result);
+    }, [searchQuery, discussions]);
 
     return (
         <div className="min-h-screen bg-[#e6f0fa]">
@@ -96,6 +90,8 @@ const ForumPage = () => {
                     </button>
                     <input
                         type="text"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
                         placeholder="Cari Judul Diskusi disini..."
                         className="border border-gray-300 px-4 py-2 rounded-lg w-1/2 focus:outline-none"
                     />
@@ -103,29 +99,34 @@ const ForumPage = () => {
 
                 {/* Diskusi Terbaru */}
                 <h3 className="text-xl font-semibold mb-4">Diskusi Terbaru</h3>
-                <div className="space-y-4">
-                    {discussions.map((discussion) => (
-                        <div
-                            key={discussion.id}
-                            onClick={() => navigate(`/reply-discussion/${discussion.id}`)} // Navigasi ke halaman balas diskusi dengan ID
-                            className="bg-white p-4 rounded-lg shadow-md border border-gray-200 cursor-pointer hover:bg-gray-100"
-                        >
-                            <div className="flex items-center space-x-4 mb-2">
-                                <img src="/images/user.png" alt="User" className="w-8 h-8 rounded-full" />
-                                <div>
-                                    <p className="font-semibold text-gray-800">{discussion.author}</p>
-                                    <p className="text-gray-500 text-sm">{discussion.time}</p>
+                {errorMessage && <p className="text-red-500 text-center">{errorMessage}</p>}
+                {filteredDiscussions.length > 0 ? (
+                    <div className="space-y-4">
+                        {filteredDiscussions.map((discussion) => (
+                            <div
+                                key={discussion.id}
+                                onClick={() => navigate(`/reply-discussion/${discussion.id}`)}
+                                className="bg-white p-4 rounded-lg shadow-md border border-gray-200 cursor-pointer hover:bg-gray-100"
+                            >
+                                <div className="flex items-center space-x-4 mb-2">
+                                    <img src="/images/user.png" alt="User" className="w-8 h-8 rounded-full" />
+                                    <div>
+                                        <p className="font-semibold text-gray-800">{discussion.author}</p>
+                                        <p className="text-gray-500 text-sm">{new Date(discussion.created_at).toLocaleString()}</p>
+                                    </div>
+                                </div>
+                                <h4 className="text-lg font-bold text-gray-900 mb-2">{discussion.title}</h4>
+                                <p className="text-gray-700 mb-2">{discussion.description}</p>
+                                <div className="flex items-center text-gray-500 text-sm">
+                                    <span className="mr-2">&#128172;</span>
+                                    <span>{discussion.comments?.length || 0} Pembahasan</span>
                                 </div>
                             </div>
-                            <h4 className="text-lg font-bold text-gray-900 mb-2">{discussion.title}</h4>
-                            <p className="text-gray-700 mb-2">{discussion.description}</p>
-                            <div className="flex items-center text-gray-500 text-sm">
-                                <span className="mr-2">&#128172;</span>
-                                <span>{discussion.comments} Pembahasan</span>
-                            </div>
-                        </div>
-                    ))}
-                </div>
+                        ))}
+                    </div>
+                ) : (
+                    <p className="text-center text-gray-500">Tidak ditemukan diskusi dengan judul tersebut.</p>
+                )}
             </main>
         </div>
     );

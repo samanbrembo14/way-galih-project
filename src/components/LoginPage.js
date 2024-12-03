@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const LoginPage = () => {
     const navigate = useNavigate();
@@ -7,17 +8,25 @@ const LoginPage = () => {
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
 
-    const handleLogin = (event) => {
+    const handleLogin = async (event) => {
         event.preventDefault();
 
-        if (email === 'admin@example.com' && password === 'adminpass') {
-            // Arahkan ke halaman Admin jika login sebagai admin
-            navigate('/admin');
-        } else if (email === 'user@example.com' && password === 'userpass') {
-            // Arahkan ke halaman Home jika login sebagai user biasa
-            navigate('/home');
-        } else {
-            setError('Email atau password salah');
+        try {
+            const response = await axios.post('http://localhost:5000/api/auth/login', { email, password });
+            const { token, role } = response.data;
+
+            // Simpan token ke localStorage
+            localStorage.setItem('token', token);
+
+            // Redirect berdasarkan role
+            if (role === 'admin') {
+                navigate('/admin'); // Halaman admin
+            } else if (role === 'user') {
+                navigate('/home'); // Halaman user
+            }
+        } catch (err) {
+            console.error('Error saat login:', err);
+            setError(err.response?.data?.error || 'Login gagal. Silakan coba lagi.');
         }
     };
 
@@ -39,6 +48,7 @@ const LoginPage = () => {
                                 onChange={(e) => setEmail(e.target.value)}
                                 className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-transparent text-gray-800 focus:border-[#1B2D48] focus:outline-none"
                                 placeholder="Masukkan email"
+                                required
                             />
                         </div>
                         <div>
@@ -47,8 +57,9 @@ const LoginPage = () => {
                                 type="password"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
-                                className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-transparent text-gray-800 focus:border-[#1B2D48] focus:outline-none"
+                                className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-transparent text-black-800 focus:border-[#1B2D48] focus:outline-none"
                                 placeholder="Masukkan password"
+                                required
                             />
                         </div>
                         {error && <p className="text-red-500 text-sm">{error}</p>}
@@ -58,8 +69,15 @@ const LoginPage = () => {
                             Login
                         </button>
                     </form>
-                    <p className="text-center mt-4 text-gray-600">
-                        Tidak Punya Akun? <a href="/register" className="text-blue-600 underline">Daftar disini</a>
+                    <p className="text-center mt-4 text-black-600">
+                        Lupa password?{' '}
+                        <a href="/forgot-password" className="text-blue-600 underline">
+                            Reset di sini
+                        </a>
+                    </p>
+
+                    <p className="text-center mt-4 text-black-600">
+                        Tidak Punya Akun? <a href="/register" className="text-blue-600 underline ">Daftar disini</a>
                     </p>
                 </div>
             </div>
