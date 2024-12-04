@@ -76,7 +76,7 @@ const InfoDetailPage = () => {
                         <img
                             src={`http://localhost:5000${infoDetail.image}`}
                             alt={infoDetail.title}
-                            className="max-w-lg h-auto rounded shadow-lg"
+                            className="w-full max-w-md h-auto rounded-lg shadow-lg object-cover"
                         />
                     </div>
                 )}
