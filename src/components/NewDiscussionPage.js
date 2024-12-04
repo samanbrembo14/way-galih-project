@@ -40,6 +40,14 @@ const NewDiscussionPage = () => {
             });
     };
 
+    const handleBack = () => {
+        if (window.history.length > 2) {
+            navigate(-1); // Kembali ke halaman sebelumnya jika ada
+        } else {
+            navigate('/forum'); // Fallback ke halaman forum jika tidak ada history sebelumnya
+        }
+    };
+
     return (
         <div className="min-h-screen bg-[#e6f0fa]">
             {/* Header */}
@@ -97,7 +105,7 @@ const NewDiscussionPage = () => {
                     <div className="flex justify-between items-center">
                         <button
                             type="button"
-                            onClick={() => navigate(-1)} // Navigasi kembali ke halaman sebelumnya
+                            onClick={handleBack} // Menggunakan fungsi handleBack
                             className="bg-gray-300 text-gray-700 font-semibold px-6 py-2 rounded-lg"
                         >
                             Kembali
