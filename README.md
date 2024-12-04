@@ -5,6 +5,8 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 # Requirements
 
 - Node.js
+- Express.js
+- MySql
 
 ## Available Scripts
 
