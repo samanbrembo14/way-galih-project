@@ -49,7 +49,7 @@ const HomePage = () => {
                     {carouselData.length > 0 && (
                         <div
                             onClick={() => handleInfoClick(carouselData[currentSlide]?.id)}
-                            className="bg-white p-6 rounded-lg shadow-md max-w-3xl w-full h-[400px] flex flex-col justify-between text-center overflow-hidden cursor-pointer"
+                            className="bg-white p-6 rounded-lg shadow-md max-w-3xl w-full flex flex-col justify-between text-center overflow-hidden cursor-pointer"
                         >
                             <h2 className="text-2xl font-bold mb-4">{carouselData[currentSlide]?.title}</h2>
                             <p className="text-gray-700 mb-4">
@@ -60,7 +60,7 @@ const HomePage = () => {
                             <img
                                 src={`http://localhost:5000${carouselData[currentSlide]?.image}`}
                                 alt={carouselData[currentSlide]?.title}
-                                className="rounded-lg w-full h-52 object-cover"
+                                className="rounded-lg w-full h-auto sm:h-[400px] aspect-[4/3] object-cover"
                             />
                         </div>
                     )}

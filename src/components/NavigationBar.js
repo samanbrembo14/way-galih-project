@@ -5,7 +5,7 @@ const NavigationBar = () => {
     const location = useLocation();
 
     return (
-        <header className="flex flex-wrap justify-between items-center bg-[#5a90b6] px-4 md:px-8 py-4 text-white">
+        <header className="relative flex flex-wrap justify-between items-center bg-[#5a90b6] px-4 md:px-8 py-4 text-white">
             <div className="flex items-center space-x-4">
                 <img src="/images/logo.png" alt="Logo" className="w-10 h-10" />
                 <h1 className="text-xl md:text-2xl font-bold">Way Galih Maju</h1>
@@ -36,8 +36,12 @@ const NavigationBar = () => {
                     Video Belajar
                 </Link>
             </nav>
-            <div className="flex items-center mt-4 md:mt-0">
-                <Link to="/profile" className="bg-white p-2 rounded-full hover:bg-gray-200 flex items-center justify-center">
+            {/* Profile Section in Top Right */}
+            <div className="absolute top-4 right-4">
+                <Link
+                    to="/profile"
+                    className="bg-white p-1 rounded-full hover:bg-gray-200 flex items-center justify-center shadow-md"
+                >
                     <img src="/images/user.png" alt="Account Icon" className="w-5 h-5 rounded-full" />
                 </Link>
             </div>
