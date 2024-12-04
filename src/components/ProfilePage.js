@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
@@ -7,6 +7,12 @@ const ProfilePage = () => {
     const [userData, setUserData] = useState(null);
     const [errorMessage, setErrorMessage] = useState('');
     const [loading, setLoading] = useState(true);
+
+    // Fungsi logout
+    const handleLogout = useCallback(() => {
+        localStorage.removeItem('token');
+        navigate('/login');
+    }, [navigate]);
 
     // Fetch data pengguna dari backend
     useEffect(() => {
@@ -37,12 +43,7 @@ const ProfilePage = () => {
         };
 
         fetchUserData();
-    }, []);
-
-    const handleLogout = () => {
-        localStorage.removeItem('token');
-        navigate('/login');
-    };
+    }, [handleLogout]);
 
     const handleBack = () => {
         navigate(-1); // Navigasi ke halaman sebelumnya

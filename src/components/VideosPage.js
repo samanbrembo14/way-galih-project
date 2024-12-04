@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 const VideoPage = () => {
     const location = useLocation();
+    const navigate = useNavigate();
 
     const [searchQuery, setSearchQuery] = useState('');
     const [filteredVideos, setFilteredVideos] = useState([]);
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
+    const [error, setError] = useState(false); // Error state diubah menjadi boolean untuk kesederhanaan
 
     // Fungsi untuk mencari video
     const handleSearch = async (query) => {
@@ -18,25 +19,14 @@ const VideoPage = () => {
         }
 
         setLoading(true);
-        setError(null);
+        setError(false); // Reset error sebelum memulai
 
         try {
             const response = await axios.get(`http://localhost:5000/api/videos/search?query=${encodeURIComponent(query)}`);
             setFilteredVideos(response.data);
         } catch (err) {
-            console.error('Error fetching videos:', {
-                message: err.message,
-                response: err.response?.data,
-                status: err.response?.status
-            });
-
-            // Pesan error yang lebih informatif
-            setError(
-                err.response?.data?.details ||
-                err.response?.data?.error ||
-                'Gagal mendapatkan video. Silakan coba lagi.'
-            );
-            setFilteredVideos([]);
+            console.error('Error fetching videos:', err); // Logging untuk debugging
+            setError(true); // Set error ke true jika terjadi kesalahan
         } finally {
             setLoading(false);
         }
@@ -46,6 +36,22 @@ const VideoPage = () => {
     useEffect(() => {
         handleSearch('tutorial DIY'); // Pencarian default
     }, []);
+
+    // Jika error, tampilkan halaman khusus error
+    if (error) {
+        return (
+            <div className="flex flex-col items-center justify-center min-h-screen bg-[#e6f0fa] text-center px-4">
+                <h1 className="text-4xl font-bold text-red-500 mb-4">Ups, sepertinya ada yang salah</h1>
+                <p className="text-lg text-gray-700 mb-6">Kami mengalami masalah saat memuat data. Silakan coba lagi nanti.</p>
+                <button
+                    onClick={() => navigate(-1)} // Navigasi ke halaman sebelumnya
+                    className="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
+                >
+                    Kembali
+                </button>
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen bg-[#e6f0fa]">
@@ -115,10 +121,6 @@ const VideoPage = () => {
 
                     {loading && (
                         <p className="text-center text-gray-500">Sedang memuat video...</p>
-                    )}
-
-                    {error && (
-                        <p className="text-center text-red-500">{error}</p>
                     )}
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">

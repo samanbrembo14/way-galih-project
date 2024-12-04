@@ -76,6 +76,12 @@ router.post('/register', async (req, res) => {
         return res.status(400).json({ error: 'Semua field harus diisi.' });
     }
 
+    // Validasi email harus @gmail.com
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
+    if (!emailRegex.test(email)) {
+        return res.status(400).json({ error: 'Hanya email dengan domain @gmail.com yang diperbolehkan.' });
+    }
+
     try {
         const [existingUser] = await db.query('SELECT * FROM users WHERE email = ?', [email]);
         if (existingUser.length > 0) {

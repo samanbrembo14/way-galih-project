@@ -34,6 +34,13 @@ const RegisterPage = () => {
             return;
         }
 
+        // Validasi email hanya boleh @gmail.com
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
+        if (!emailRegex.test(formData.email)) {
+            setError('Hanya email dengan domain @gmail.com yang diperbolehkan.');
+            return;
+        }
+
         try {
             // Kirim data ke backend
             const response = await axios.post('http://localhost:5000/api/auth/register', formData);
