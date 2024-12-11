@@ -38,7 +38,7 @@ console.log('Video routes tersedia di /api/videos');
 
 // Endpoint untuk tes kesehatan server
 app.get('/', (req, res) => {
-    res.send('Server is running');
+    res.send('Server berjalan');
 });
 
 // Menjalankan server
