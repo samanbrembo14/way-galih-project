@@ -34,3 +34,4 @@ logs
 *.log
 Backend/.env
 villageproject
+Backend/env DEFAULT
