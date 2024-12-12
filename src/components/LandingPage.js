@@ -366,19 +366,19 @@ const LandingPage = () => {
                             <p className="flex items-center">
                                 <img src="/Images/envelope.svg" alt="Email" className="w-5 h-5 mr-2"/>
                                 <a
-                                    href="mailto:contact@waygalihmaju.com"
+                                    href="mailto:waygalih_12@gmail.com"
                                     className="text-blue-400 hover:underline"
                                 >
-                                    contact@waygalihmaju.com
+                                    waygalih_12@gmail.com
                                 </a>
                             </p>
                             <p className="flex items-center">
                                 <img src="/Images/phone-call.svg" alt="Phone" className="w-5 h-5 mr-2"/>
                                 <a
-                                    href="tel:+6285377754075"
+                                    href="tel:+6285856912088"
                                     className="text-blue-400 hover:underline"
                                 >
-                                    +62 812-3456-789
+                                    +62 858-5691-2088
                                 </a>
                             </p>
                         </div>

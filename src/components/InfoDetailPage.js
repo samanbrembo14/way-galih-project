@@ -3,13 +3,12 @@ import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 const InfoDetailPage = () => {
-    const { id } = useParams(); // Ambil ID dari URL
+    const { id } = useParams();
     const navigate = useNavigate();
-    const [infoDetail, setInfoDetail] = useState(null); // State untuk detail informasi
-    const [errorMessage, setErrorMessage] = useState(''); // Pesan error
-    const [loading, setLoading] = useState(true); // Status loading
+    const [infoDetail, setInfoDetail] = useState(null);
+    const [errorMessage, setErrorMessage] = useState('');
+    const [loading, setLoading] = useState(true);
 
-    // Fetch detail informasi dari backend
     useEffect(() => {
         const fetchInfoDetail = async () => {
             try {
@@ -34,23 +33,21 @@ const InfoDetailPage = () => {
         }
     }, [id]);
 
-    // Jika sedang memuat
     if (loading) {
         return (
-            <div className="min-h-screen bg-[#e6f0fa] flex items-center justify-center">
-                <p className="text-gray-500">Memuat detail informasi...</p>
+            <div className="min-h-screen bg-[#e6f0fa] flex items-center justify-center animate-fadeIn">
+                <p className="text-gray-500 text-lg font-semibold">Memuat detail informasi...</p>
             </div>
         );
     }
 
-    // Jika terjadi error
     if (errorMessage) {
         return (
-            <div className="min-h-screen bg-[#e6f0fa] flex flex-col items-center justify-center">
-                <p className="text-red-500">{errorMessage}</p>
+            <div className="min-h-screen bg-[#e6f0fa] flex flex-col items-center justify-center animate-fadeIn">
+                <p className="text-red-500 text-lg font-semibold">{errorMessage}</p>
                 <button
                     onClick={() => navigate(-1)}
-                    className="bg-blue-500 text-white px-4 py-2 rounded mt-4"
+                    className="mt-4 bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg shadow-lg transition-all duration-300"
                 >
                     Kembali
                 </button>
@@ -58,17 +55,16 @@ const InfoDetailPage = () => {
         );
     }
 
-    // Jika data berhasil dimuat
     return (
-        <div className="min-h-screen bg-[#e6f0fa]">
-            <header className="bg-[#5a90b6] px-8 py-4 text-white">
-                <h1 className="text-2xl font-bold">Detail Informasi</h1>
+        <div className="min-h-screen bg-[#e6f0fa] animate-fadeIn">
+            <header className="bg-[#5a90b6] px-8 py-4 text-white shadow-md">
+                <h1 className="text-2xl md:text-3xl font-bold tracking-wide">Detail Informasi</h1>
             </header>
 
-            <main className="max-w-4xl mx-auto p-8 bg-white rounded shadow-md mt-8">
-                <h2 className="text-3xl font-bold mb-4">{infoDetail.title}</h2>
-                <p className="text-gray-700 mb-6">{infoDetail.description}</p>
-                <p className="text-gray-500 text-sm mb-4">
+            <main className="max-w-4xl mx-auto mt-10 p-6 bg-white rounded-lg shadow-lg transition-transform duration-300 hover:scale-105">
+                <h2 className="text-2xl md:text-4xl font-bold text-gray-800 mb-4">{infoDetail.title}</h2>
+                <p className="text-gray-600 text-base md:text-lg leading-relaxed mb-6">{infoDetail.description}</p>
+                <p className="text-gray-500 text-sm mb-6">
                     Dipublikasikan pada: {new Date(infoDetail.date).toLocaleDateString()}
                 </p>
                 {infoDetail.image && (
@@ -76,13 +72,13 @@ const InfoDetailPage = () => {
                         <img
                             src={`http://localhost:5000${infoDetail.image}`}
                             alt={infoDetail.title}
-                            className="w-full max-w-md h-auto rounded-lg shadow-lg object-cover"
+                            className="w-full max-w-md md:max-w-lg h-auto rounded-lg shadow-xl object-cover"
                         />
                     </div>
                 )}
                 <button
                     onClick={() => navigate(-1)}
-                    className="bg-blue-500 text-white px-6 py-3 rounded"
+                    className="mt-4 bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 md:px-8 md:py-3 rounded-lg shadow-lg transition-all duration-300"
                 >
                     Kembali
                 </button>

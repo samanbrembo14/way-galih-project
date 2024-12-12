@@ -59,10 +59,40 @@ const RegisterPage = () => {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#f0f4fa] via-[#b0c4de] to-[#2F4C78] px-8">
-            <div className="w-full max-w-md bg-white rounded-[40px] shadow-md p-8">
+        <div
+            className="relative min-h-screen flex items-center justify-center bg-cover bg-center px-8"
+            style={{
+                backgroundImage: `url('/Images/desa2.jpg')`, // Ganti dengan path gambar Anda
+            }}
+        >
+            {/* Tombol Kembali */}
+            <button
+                onClick={() => {
+                    if (window.history.length > 1) {
+                        navigate(-1);
+                    } else {
+                        navigate('/');
+                    }
+                }}
+                className="absolute top-6 left-4 sm:top-8 sm:left-8 flex items-center text-gray-700 bg-white bg-opacity-70 rounded-full p-2 hover:bg-opacity-90 shadow-md z-50"
+            >
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-6 w-6"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                >
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+                </svg>
+            </button>
+
+            {/* Form Pendaftaran */}
+            <div className="w-full max-w-md bg-white bg-opacity-30 backdrop-blur-sm md:backdrop-blur-md rounded-[40px] shadow-md p-8 mt-16 sm:mt-20">
                 <h2 className="text-3xl font-bold text-gray-800 text-center mb-6">Daftar Akun</h2>
                 <form className="space-y-6" onSubmit={handleRegister}>
+                    {/* Field Input */}
                     <div>
                         <label className="block text-lg font-bold text-gray-800 mb-1" htmlFor="name">
                             Nama
