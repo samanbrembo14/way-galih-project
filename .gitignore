@@ -36,3 +36,4 @@ logs
 Backend/.env
 villageproject
 Backend/env DEFAULT
+package.json
