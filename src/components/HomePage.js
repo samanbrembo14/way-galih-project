@@ -10,6 +10,12 @@ const HomePage = () => {
     const navigate = useNavigate();
     const autoSlideInterval = 2000;
 
+    // Fungsi untuk memformat tanggal
+    const formatDate = (isoDate) => {
+        const dateObj = new Date(isoDate);
+        return `${dateObj.getFullYear()}-${(dateObj.getMonth() + 1).toString().padStart(2, '0')}-${dateObj.getDate().toString().padStart(2, '0')}`;
+    };
+
     useEffect(() => {
         // Fetch data dari API
         axios.get('http://localhost:5000/api/announcements')
@@ -22,7 +28,6 @@ const HomePage = () => {
             .catch((error) => console.error('Error fetching announcements:', error));
     }, []);
 
-    // Bungkus handleNextSlide dengan useCallback
     const handleNextSlide = useCallback(() => {
         setCurrentSlide((prevSlide) => (prevSlide + 1) % carouselData.length);
     }, [carouselData.length]);
@@ -35,11 +40,10 @@ const HomePage = () => {
         navigate(`/info-detail/${id}`);
     };
 
-    // Auto-slide dengan interval
     useEffect(() => {
         const interval = setInterval(handleNextSlide, autoSlideInterval);
         return () => clearInterval(interval);
-    }, [handleNextSlide]); // Tambahkan handleNextSlide sebagai dependensi
+    }, [handleNextSlide]);
 
     const handlers = useSwipeable({
         onSwipedLeft: handleNextSlide,
@@ -123,7 +127,7 @@ const HomePage = () => {
                                 />
                                 <div className="absolute bottom-0 bg-[#5291B0] text-white text-center w-full py-2">
                                     <h4 className="text-lg font-semibold">{item.title}</h4>
-                                    <p className="text-sm">{item.date}</p>
+                                    <p className="text-sm">{formatDate(item.date)}</p>
                                 </div>
                             </div>
                         ))}
